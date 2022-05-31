@@ -2,11 +2,11 @@
 
 ## Installation of packages:
 ```commandline
-pip install --upgrade setuptools wheel
-pip install wikipedia
-pip install nltk
+pip3 install --upgrade setuptools wheel
+pip3 install wikipedia
+pip3 install nltk
 python3 -m ntlk.downloader wordnet
-pip install spacy
+pip3 install spacy
 python3 -m spacy download en_core_web_sm
 ```
 ## Usage:
