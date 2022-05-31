@@ -1,8 +1,9 @@
 # filename: ner_spacy.py
 # author: Mathijs Afman
 # description: ner tags and wikificates a file
-# usage: python3 ner_spacy.py filename
-# this script only writes files if
+# usage: python3 ner_spacy.py folder
+# example: python3 ner_spacy.py group9_mathijs/d0056/
+# this script can only write files if
 # it is a sibling of the group 9 folder
 
 import spacy
@@ -14,10 +15,16 @@ from nltk.stem import WordNetLemmatizer
 NER = spacy.load('en_core_web_sm')
 
 
-def open_file(filename):
+def open_split_file(filename):
     """opens a file"""
     with open(filename) as inp:
         return [line.split() for line in inp.readlines()]
+
+
+def open_raw_file(filename):
+    """opens a raw file and returns it as a single string"""
+    with open(filename) as inp:
+        return inp.read()
 
 
 def find_wiki_link(string):
@@ -54,7 +61,7 @@ def spacy_gen_ner_wiki(ent):
             spans.append([token_start,
                           token_start + len(token),
                           spacy_label_lut[ent.label_],
-                          'find_wiki_link(ent.text), spacy'])
+                          find_wiki_link(ent.text)])
             token_start += len(token) + 1
         return spans
     return []
@@ -106,7 +113,7 @@ def wordnet_gen_ner_wiki(lines):
                     for ner_tag in hypernym_dict:
                         if hypernym_of(synset, hypernym_dict[ner_tag]):
                             line.append(ner_tag[:3])
-                            line.append('find_wiki_link(word), wordnet')
+                            line.append(find_wiki_link(word))
                             break
                             # to prevent a word from getting bot tags
                     break
@@ -120,9 +127,8 @@ def write_file(filename, lines):
 
 
 def main():
-    lines = open_file(sys.argv[1])
-    tokens = [line[3] for line in lines]
-    raw_text = ' '.join(tokens)
+    lines = open_split_file(sys.argv[1] + 'en.tok.off.pos')
+    raw_text = open_raw_file(sys.argv[1] + 'en.raw')
     ner_text = NER(raw_text)
 
     tagged_spans = []
@@ -146,11 +152,6 @@ def main():
     #    alleen nog entertainment
     #  onderscheiden van country en city in de GPE tag
     #    misschien door definition van de wiki page te checken
-    #  ' '.join() is niet goed voor punctuation, introduceert bugs
-    #    mogelijke oplossing is om de raw file te gebruiken
-    #    of om spaties voor punctuation weg te halen
-    #      simpele rule based system
-    #  er vindt een of andere character skip plaats bij d0056
 
 
 if __name__ == "__main__":
