@@ -142,7 +142,7 @@ def main():
     complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
 
     # this line only works if the script is run as sibling of group 9 folder
-    # write_file(sys.argv[1] + '.aut', spacy_ner_wiki_lines)
+    # write_file(sys.argv[1] + 'en.tok.off.pos.aut', spacy_ner_wiki_lines)
 
     for line in complete_ner_wiki_lines:
         print(line)
