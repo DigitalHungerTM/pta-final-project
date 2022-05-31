@@ -150,8 +150,12 @@ def main():
     # TODO:
     #  ondersteuning voor missende tags toevoegen
     #    alleen nog entertainment
+    # TODO:
     #  onderscheiden van country en city in de GPE tag
     #    misschien door definition van de wiki page te checken
+    # TODO:
+    #  voor delen van namen misschien de wiki pagina kopieren
+    #  genoemde namen
 
 
 if __name__ == "__main__":
