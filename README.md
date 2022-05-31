@@ -6,7 +6,7 @@ pip3 install --upgrade setuptools wheel
 pip3 install wikipedia
 pip3 install lxml
 pip3 install nltk
-python3 -m ntlk.downloader wordnet
+python3 -m nltk.downloader wordnet
 pip3 install spacy
 python3 -m spacy download en_core_web_sm
 ```
