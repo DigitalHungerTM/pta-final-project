@@ -19,9 +19,9 @@ make sure the ner_spacy.py file is a sibling
 of the folder containing the folders containing
 the files and run
 ```commandline
-python3 ner_spacy.py folder/folder/
+python3 wikificator.py folder/folder/
 ```
 example:
 ```commandline
-python3 ner_spacy.py group9/d0056/
+python3 wikificator.py group9/d0056/
 ```
