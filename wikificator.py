@@ -9,6 +9,7 @@
 import spacy
 import wikipedia as wk
 import sys
+from random import random
 from nltk.corpus import wordnet as wn
 from nltk.stem import WordNetLemmatizer
 
@@ -40,6 +41,32 @@ def find_wiki_link(string):
         return 'no page found'
 
 
+def disambiguate_gpe(term):
+    try:
+        summary = wk.page(wk.search(term)[0]).summary
+        # the definition is usually mentioned first
+        for word in summary.split():
+            if word == 'city' or word == 'town':
+                return 'CIT'
+            elif word == 'country':
+                return 'COU'
+            elif random() >= 0.5:
+                return 'CIT'
+            else:
+                return 'COU'
+    # if page not found it guesses
+    except wk.exceptions.DisambiguationError:
+        if random() >= 0.5:
+            return 'CIT'
+        else:
+            return 'COU'
+    except wk.exceptions.PageError:
+        if random() >= 0.5:
+            return 'CIT'
+        else:
+            return 'COU'
+
+
 def spacy_gen_ner_wiki(ent):
     """formats an entity in the same way as en.tok.off.pos
     and appends an ner tag and a wiki link using spacy"""
@@ -49,13 +76,12 @@ def spacy_gen_ner_wiki(ent):
     spans = []
     spacy_label_lut = {
         'PERSON': 'PER',
-        'GPE': 'CIT/COU',
+        'GPE': 'GPE',
         'LOC': 'NAT',  # klopt misschien niet helemaal
         'ORG': 'ORG',
         'NORP': 'ORG',  # neemt nationalities (zoals 'lebanese') ook mee
     }
-    # spacy is missing ANIMAL, SPORT and ENTERTAINMENT
-    # ANIMAL and SPORT are easy to tag with wordnet
+    # filters on only wanted NER tags
     if ent.label_ in 'PERSON GPE LOC ORG NORP'.split():
         for token in ent_tokens:
             spans.append([token_start,
@@ -63,6 +89,10 @@ def spacy_gen_ner_wiki(ent):
                           spacy_label_lut[ent.label_],
                           find_wiki_link(ent.text)])
             token_start += len(token) + 1
+
+        for span in spans:
+            if span[2] == 'GPE':
+                span[2] = disambiguate_gpe(ent.text)
         return spans
     return []
 

@@ -8,6 +8,7 @@
 
 import wikipedia as wk
 from time import time
+from random import random
 
 
 def find_wiki_link(string):
@@ -22,13 +23,29 @@ def find_wiki_link(string):
         return 'no page found'
 
 
+def find_page_contents(term):
+    """"""
+    try:
+        summary =  wk.page(wk.search(term)[0]).summary
+        if 'country' in summary:
+            return 'COU'
+        else:
+            return 'CIT'
+
+    # page not found or page is ambiguous
+    except wk.exceptions.DisambiguationError or wk.exceptions.PageError:
+        return 'not sure'
+
+
 def main():
-    terms = 'at-least-three'.split()
+    terms = 'Venezuela'.split()
     for term in terms:
         start = time()
         link = find_wiki_link(term)
+        summary = find_page_contents(term)
         end = time()
         print(f'{term}, {link}, took {end-start:.1f} seconds')
+        print(summary)
 
 
 if __name__ == "__main__":
