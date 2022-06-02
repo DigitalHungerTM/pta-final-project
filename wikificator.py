@@ -32,13 +32,13 @@ def find_wiki_link(string):
     """tries to find a wikipedia link for a string,
      returns the link if found,
      returns 'ambiguous' if the string was ambiguous
-     returns 'no page found' if no page was found"""
+     returns 'no_page_found' if no page was found"""
     try:
         return wk.page(wk.search(string)[0]).url
     except wk.exceptions.DisambiguationError:
         return 'ambiguous'
     except wk.exceptions.PageError:
-        return 'no page found'
+        return 'no_page_found'
 
 
 def disambiguate_gpe(term):
