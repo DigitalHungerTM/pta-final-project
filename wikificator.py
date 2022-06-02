@@ -50,10 +50,11 @@ def disambiguate_gpe(term):
                 return 'CIT'
             elif word == 'country':
                 return 'COU'
-            elif random() >= 0.5:
-                return 'CIT'
-            else:
-                return 'COU'
+
+        if random() >= 0.5:
+            return 'CIT'
+        else:
+            return 'COU'
     # if page not found it guesses
     except wk.exceptions.DisambiguationError:
         if random() >= 0.5:
