@@ -131,7 +131,11 @@ def wordnet_gen_ner_wiki(lines):
     lemmatizer = WordNetLemmatizer()
     hypernym_dict = {
         'ANIMAL': wn.synset('animal.n.01'),
-        'SPORT': wn.synset('sport.n.01')
+        'SPORT': wn.synset('sport.n.01'),
+        'ENTERTAINMENT': wn.synset('book.n.01'),
+        'ENTERTAINMENT1': wn.synset('movie.n.01'),
+        'ENTERTAINMENT2': wn.synset('newspaper.n.01'),
+        'ENTERTAINMENT3': wn.synset('magazine.n.01')
     }
     for line in lines:
         word = line[3]
