@@ -6,6 +6,7 @@
 # this script can only write files if
 # it is a sibling of the group 9 folder
 
+import os
 import spacy
 import wikipedia as wk
 import sys
@@ -139,19 +140,20 @@ def wordnet_gen_ner_wiki(lines):
         'ENTERTAINMENT3': wn.synset('magazine.n.01')
     }
     for line in lines:
-        word = line[3]
-        pos_tag = line[4]
-        if len(line) == 5:  # only un-tagged lines
-            if pos_tag.startswith('N'):  # word is a noun
-                lemma = lemmatizer.lemmatize(word)
-                for synset in wn.synsets(lemma):
-                    for ner_tag in hypernym_dict:
-                        if hypernym_of(synset, hypernym_dict[ner_tag]):
-                            line.append(ner_tag[:3])
-                            line.append(find_wiki_link(word))
-                            break
-                            # to prevent a word from getting bot tags
-                    break
+        if len(line) > 4:
+            word = line[3]
+            pos_tag = line[4]
+            if len(line) == 5:  # only un-tagged lines
+                if pos_tag.startswith('N'):  # word is a noun
+                    lemma = lemmatizer.lemmatize(word)
+                    for synset in wn.synsets(lemma):
+                        for ner_tag in hypernym_dict:
+                            if hypernym_of(synset, hypernym_dict[ner_tag]):
+                                line.append(ner_tag[:3])
+                                line.append(find_wiki_link(word))
+                                break
+                                # to prevent a word from getting bot tags
+                        break
     return lines
 
 
@@ -162,35 +164,46 @@ def write_file(filename, lines):
 
 
 def main():
-    lines = open_split_file(sys.argv[1] + 'en.tok.off.pos')
-    raw_text = open_raw_file(sys.argv[1] + 'en.raw')
-    ner_text = NER(raw_text)
 
-    tagged_spans = []
-    for ent in ner_text.ents:
-        ner_wiki_spans = spacy_gen_ner_wiki(ent)
-        for line in ner_wiki_spans:
-            tagged_spans.append(line)
+    path = os.getcwd()
+    group_path = path + "/dev"
 
-    spacy_ner_wiki_lines = append_spacy_ner_wiki(lines, tagged_spans)
+    for item in os.walk(group_path, topdown=True):
+        for title in item:
+            if "en.tok.off.pos" in title:
+                directory = item[0]
+                lines = open_split_file(directory + "/" + item[2][4])
+                raw_text = open_raw_file(directory + "/" + item[2][2])
+                ner_text = NER(raw_text)
 
-    complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
+                tagged_spans = []
+                for ent in ner_text.ents:
+                    ner_wiki_spans = spacy_gen_ner_wiki(ent)
+                    for line in ner_wiki_spans:
+                        tagged_spans.append(line)
 
-    # this line only works if the script is run as sibling of group 9 folder
-    # write_file(sys.argv[1] + 'en.tok.off.pos.aut', spacy_ner_wiki_lines)
+                spacy_ner_wiki_lines = append_spacy_ner_wiki(lines, tagged_spans)
 
-    for line in complete_ner_wiki_lines:
-        print(line)
+                complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
 
-    # TODO:
-    #  ondersteuning voor missende tags toevoegen
-    #    alleen nog entertainment
-    # TODO:
-    #  onderscheiden van country en city in de GPE tag
-    #    misschien door definition van de wiki page te checken
-    # TODO:
-    #  voor delen van namen misschien de wiki pagina kopieren
-    #  genoemde namen
+                # this line only works if the script is run as sibling of group 9 folder
+                # write_file(sys.argv[1] + 'en.tok.off.pos.aut', spacy_ner_wiki_lines)
+
+                temp_file = open(directory + "/en.tok.off.pos.aut", "w")
+                for lst in complete_ner_wiki_lines:
+                    temp_file.write(" ".join(lst) + "\n")
+                temp_file.close()
+                print("Finished writing to:", directory)
+
+                # TODO:
+                #  ondersteuning voor missende tags toevoegen
+                #    alleen nog entertainment
+                # TODO:
+                #  onderscheiden van country en city in de GPE tag
+                #    misschien door definition van de wiki page te checken
+                # TODO:
+                #  voor delen van namen misschien de wiki pagina kopieren
+                #  genoemde namen
 
 
 if __name__ == "__main__":
