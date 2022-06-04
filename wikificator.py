@@ -1,10 +1,8 @@
 # filename: ner_spacy.py
-# author: Mathijs Afman
+# author: Mathijs Afman, Maxim van der Maesen de Sombreff, Thijmen Adam
 # description: ner tags and wikificates a file
-# usage: python3 ner_spacy.py folder
-# example: python3 ner_spacy.py group9_mathijs/d0056/
-# this script can only write files if
-# it is a sibling of the group 9 folder
+# usage: python3 ner_spacy.py [directory]
+# example: python3 ner_spacy.py /dev
 
 import os
 import spacy
@@ -166,14 +164,17 @@ def write_file(filename, lines):
 def main():
 
     path = os.getcwd()
-    group_path = path + "/dev"
+    # Input should be /[folder_name]
+    group_path = path + sys.argv[1]
 
     for item in os.walk(group_path, topdown=True):
         for title in item:
             if "en.tok.off.pos" in title:
+
                 directory = item[0]
-                lines = open_split_file(directory + "/" + item[2][4])
-                raw_text = open_raw_file(directory + "/" + item[2][2])
+                print("Working on:", directory)
+                lines = open_split_file(directory + "/" + item[2][3])
+                raw_text = open_raw_file(directory + "/" + item[2][1])
                 ner_text = NER(raw_text)
 
                 tagged_spans = []
@@ -185,9 +186,6 @@ def main():
                 spacy_ner_wiki_lines = append_spacy_ner_wiki(lines, tagged_spans)
 
                 complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
-
-                # this line only works if the script is run as sibling of group 9 folder
-                # write_file(sys.argv[1] + 'en.tok.off.pos.aut', spacy_ner_wiki_lines)
 
                 temp_file = open(directory + "/en.tok.off.pos.aut", "w")
                 for lst in complete_ner_wiki_lines:
