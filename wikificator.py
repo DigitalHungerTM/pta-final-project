@@ -1,8 +1,8 @@
-# filename: ner_spacy.py
+# filename: wikificator.py
 # author: Mathijs Afman, Maxim van der Maesen de Sombreff, Thijmen Adam
 # description: ner tags and wikificates a file
-# usage: python3 ner_spacy.py [directory]
-# example: python3 ner_spacy.py /dev
+# usage: python3 wikificator.py [directory]
+# example: python3 wikificator.py /dev
 
 import os
 import spacy
@@ -173,6 +173,10 @@ def main():
 
                 directory = item[0]
                 print("Working on:", directory)
+                # For this index, check the index in
+                # the files of one of your directories.
+                # Change [2][3] to the index of the .pos file.
+                # Change [2][1] to the index of the .raw file.
                 lines = open_split_file(directory + "/" + item[2][3])
                 raw_text = open_raw_file(directory + "/" + item[2][1])
                 ner_text = NER(raw_text)
