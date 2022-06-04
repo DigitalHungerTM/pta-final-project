@@ -17,11 +17,15 @@ def open_files(path_name):
     cur_path = os.getcwd()
     group_path = cur_path + path_name
 
+    # Loops through the list of directories in a main directory and
+    # gets all .ent or .aut files depending on the index
     final_lst = []
     for files in os.walk(group_path):
         for file in files:
             directory = files[0]
             if 'en.tok.off.pos.ent' in file:
+                # Change the index [5] to where the index
+                # to where the .ent file is found in one of your directories.
                 with open(directory + '/' + file[5], encoding='utf-8') as f:
                     sent_list = f.readlines()
                     for sent in sent_list:
@@ -33,6 +37,8 @@ def open_files(path_name):
         for file in files:
             directory = files[0]
             if 'en.tok.off.pos.aut' in file:
+                # Change the index [4] to where the index
+                # to where the .aut file is found in one of your directories
                 with open(directory + '/' + file[4], encoding='utf-8') as f:
                     sent_list = f.readlines()
                     for sent in sent_list:
@@ -55,7 +61,7 @@ def check_tagged2(line):
 
 
 def classified(annot1, annot2):
-    """returns a list of tags for both annotators"""
+    """returns a list of tags for both files"""
     ref = []
     tagged = []
     for i in range(len(annot1)):
@@ -72,7 +78,7 @@ def classified(annot1, annot2):
 
 
 def wikified(annot1, annot2):
-    """returns a list of tags for both annotators"""
+    """returns a list of tags (wiki) for both files"""
     ref = []
     tagged = []
     for i in range(len(annot1)):
@@ -84,7 +90,7 @@ def wikified(annot1, annot2):
             tagged.append(annot2[i][6])
         else:
             tagged.append('NONE')
-    
+
     return ref, tagged
 
 
@@ -154,18 +160,18 @@ def main():
         else:
             precision = true_positives[i] / float(true_positives[i] +
                                                   false_positives[i])
-            
+
             recall = true_positives[i] / float(true_positives[i] +
                                                false_negatives[i])
             fscore = 2 * (precision * recall) / float(precision + recall)
             print("precision: ", i, precision)
             print("recall: ", i, recall)
         print("f-score:", i, fscore)
+        print()
+
         fscore_list.append(fscore)
-    
 
     print("average f-score: ", sum(fscore_list) / len(fscore_list))
-
 
     print()
     print()
@@ -195,13 +201,14 @@ def main():
             print("precision: ", i, precision)
             print("recall: ", i, recall)
         print("f-score:", i, fscore)
+        print()
         fscore_list2.append(fscore)
 
     print("average f-score: ", sum(fscore_list2) / len(fscore_list2))
 
     print()
-    print()
-    print("If a wikipedia link was tagged and average f-score for every wikipedia link:")
+    print("Score if a wikipedia link was tagged and "
+          "average f-score for every wikipedia link:")
     tagged1_wiki, tagged2_wiki = wikified(annot1, annot2)
     cm = ConfusionMatrix(tagged1_wiki, tagged2_wiki)
 
@@ -243,6 +250,7 @@ def main():
     # TODO:
     #   Calculate not predicting a link when there should
     #   be one (check step 1 for checking wikipedia links in the assignment)
+
 
 if __name__ == "__main__":
     main()
