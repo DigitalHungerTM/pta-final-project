@@ -151,15 +151,15 @@ def main():
     st.write("For this streamlit UI you will have to upload both a .pos file"
              " and a .raw file in the corresponding upload boxes. These "
              "files should be in the same directory and the pos-tagged file "
-             "has to be a pos-tagged file adapted from the .raw file. Once you have"
-             " uploaded the files it will run the program and showcase the wikified"
-             " clickable links in a text. It will not be 100\% accurate.")
+             "has to be a pos-tagged file adapted from the .raw file."
+             " Once you have uploaded the files it will run the "
+             " program and showcase the wikified"
+             " clickable links in a text. It will not be 100% accurate.")
     lines = st.file_uploader("Please upload a .pos file here", type=["pos"])
     raw_text = st.file_uploader("Please upload a .raw file here", type=["raw"])
-    stringio = StringIO(lines.getvalue().decode("utf-8"))
-
 
     if lines is not None and raw_text is not None:
+        stringio = StringIO(lines.getvalue().decode("utf-8"))
         lines = [line.split() for line in stringio.readlines()]
         ner_text = NER(raw_text.read().decode('UTF-8'))
 
@@ -184,21 +184,21 @@ def main():
             if len(item) > 4:
                 if len(item) > 5:
                     if "https" in item[6]:
-                        print_string += " ["+ item[3] +"]("+ item[6]+ ")"
+                        print_string += " [" + item[3] + "](" + item[6] + ")"
                 else:
                     print_string += " " + item[3]
 
         st.write(print_string)
 
-                # TODO:
-                #  ondersteuning voor missende tags toevoegen
-                #    alleen nog entertainment
-                # TODO:
-                #  onderscheiden van country en city in de GPE tag
-                #    misschien door definition van de wiki page te checken
-                # TODO:
-                #  voor delen van namen misschien de wiki pagina kopieren
-                #  genoemde namen
+        # TODO:
+        #  ondersteuning voor missende tags toevoegen
+        #    alleen nog entertainment
+        # TODO:
+        #  onderscheiden van country en city in de GPE tag
+        #    misschien door definition van de wiki page te checken
+        # TODO:
+        #  voor delen van namen misschien de wiki pagina kopieren
+        #  genoemde namen
 
 
 if __name__ == "__main__":
