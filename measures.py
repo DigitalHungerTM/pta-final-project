@@ -221,17 +221,6 @@ def main():
     # print("FP:", sum(false_positives.values()), false_positives)
     print()
 
-    # wiki_list1 = []
-    # wiki_list2 = []
-
-    # for item in tagged1_wiki:
-    #     if item != 'NONE':
-    #         wiki_list1.append(item)
-
-    # for item in tagged2_wiki:
-    #     if item != 'NONE':
-    #         wiki_list2.append(item)
-
     fscore_wiki = []
     for i in sorted(lbs):
         if true_positives[i] == 0:
@@ -247,6 +236,21 @@ def main():
 
     print("average f-score: ", sum(fscore_wiki) / len(fscore_wiki))
 
+    wikilist = []
+    for item in annot1:
+        if len(item) > 6 and item[6] != "":
+            wikilist.append(item)
+
+
+    wikilist2 = []
+    for item2 in annot2:
+        if len(item2) > 6 and item2[6] != "":
+            wikilist2.append(item)
+
+    print()
+    print("How many times a link was predicted by us when " 
+          "there shouldn't have been one: ", 
+          len(wikilist2) - len(wikilist))
     # TODO:
     #   Calculate not predicting a link when there should
     #   be one (check step 1 for checking wikipedia links in the assignment)
