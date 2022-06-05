@@ -15,13 +15,18 @@ and edit wikipedia.py. Edit line 389 for the BeautifulSoup constructor
 to have ```"features='lxml'"``` as an argument so that the line reads:
 ```lis = BeautifulSoup(html, features='lxml').find_all('li')```
 ## Usage:
-make sure the ner_spacy.py file is a sibling
-of the folder containing the folders containing
-the files and run
+Run the wikificator.py file to loop through folders. Once an error pops, a mistake has been found in one of the folders. It says which folder you were working on. Delete that folder and rerun the wikificator.py until it works fine.
 ```commandline
-python3 wikificator.py folder/folder/
+python3 wikificator.py folder/
 ```
 example:
 ```commandline
-python3 wikificator.py group9/d0056/
+python3 wikificator.py dev/
 ```
+
+You can also use the wikificator_ui.py file.  
+```commandline
+streamlit run wikificator_ui.py
+```
+
+You can use this and upload both a .raw and .pos file from the same folder and see the results in a simple ui.
