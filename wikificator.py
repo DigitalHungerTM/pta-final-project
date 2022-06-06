@@ -34,6 +34,8 @@ def find_wiki_link(string):
      returns 'no_page_found' if no page was found"""
     try:
         return wk.page(wk.search(string)[0]).url
+    except IndexError:  # wikipedia api returns an empty list
+        return 'no_page_found'
     except wk.exceptions.DisambiguationError:
         return 'ambiguous'
     except wk.exceptions.PageError:
