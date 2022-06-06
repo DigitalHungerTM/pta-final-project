@@ -180,45 +180,72 @@ def get_person_list(wiki_list):
 
 def main():
 
-    path = os.getcwd()
-    # Input should be /[folder_name]
-    group_path = path + sys.argv[1]
+    directory = sys.argv[1]
+    folders = os.listdir(directory)
+    print(folders)
+    for folder in folders:
+        print(f"working on {folder}")
+        lines = open_split_file(f"{directory}/{folder}/en.tok.off.pos")
+        raw_text = open_raw_file(f"{directory}/{folder}/en.raw")
+        ner_text = NER(raw_text)
 
-    for item in os.walk(group_path, topdown=True):
-        for title in item:
-            if "en.tok.off.pos" in title:
+        tagged_spans = []
+        for ent in ner_text.ents:
+            ner_wiki_spans = spacy_gen_ner_wiki(ent)
+            for line in ner_wiki_spans:
+                tagged_spans.append(line)
 
-                directory = item[0]
-                print("Working on:", directory)
-                # For this index, check the index in
-                # the files of one of your directories.
-                # Change [2][3] to the index of the .pos file.
-                # Change [2][1] to the index of the .raw file.
-                lines = open_split_file(directory + "/" + item[2][3])
-                raw_text = open_raw_file(directory + "/" + item[2][1])
-                ner_text = NER(raw_text)
+        spacy_ner_wiki_lines = append_spacy_ner_wiki(lines, tagged_spans)
 
-                tagged_spans = []
-                for ent in ner_text.ents:
-                    ner_wiki_spans = spacy_gen_ner_wiki(ent)
-                    for line in ner_wiki_spans:
-                        tagged_spans.append(line)
+        complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
 
-                spacy_ner_wiki_lines = append_spacy_ner_wiki(lines, tagged_spans)
+        pers_list = get_person_list(complete_ner_wiki_lines)
 
-                complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
+        for lst in complete_ner_wiki_lines:
+            for per in pers_list:
+                if len(lst) > 5:
+                    if lst[3] in per:
+                        lst[6] = per[1]
 
-                pers_list = get_person_list(complete_ner_wiki_lines)
+        write_file(f"{directory}/{folder}/en.tok.off.pos.aut", complete_ner_wiki_lines)
 
-                temp_file = open(directory + "/en.tok.off.pos.aut", "w")
-                for lst in complete_ner_wiki_lines:
-                    for per in pers_list:
-                        if len(lst) > 5:
-                            if lst[3] in per:
-                                lst[6] = per[1]
-                    temp_file.write(" ".join(lst) + "\n")
-                temp_file.close()
-                print("Finished writing to:", directory)
+        print(f'finished writing {folder}')
+
+    # for item in os.walk(group_path, topdown=True):
+    #     for title in item:
+    #         if "en.tok.off.pos" in title:
+    #
+    #             directory = item[0]
+    #             print("Working on:", directory)
+    #             # For this index, check the index in
+    #             # the files of one of your directories.
+    #             # Change [2][3] to the index of the .pos file.
+    #             # Change [2][1] to the index of the .raw file.
+    #             lines = open_split_file(directory + "/" + item[2][3])
+    #             raw_text = open_raw_file(directory + "/" + item[2][1])
+    #             ner_text = NER(raw_text)
+    #
+    #             tagged_spans = []
+    #             for ent in ner_text.ents:
+    #                 ner_wiki_spans = spacy_gen_ner_wiki(ent)
+    #                 for line in ner_wiki_spans:
+    #                     tagged_spans.append(line)
+    #
+    #             spacy_ner_wiki_lines = append_spacy_ner_wiki(lines, tagged_spans)
+    #
+    #             complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
+    #
+    #             pers_list = get_person_list(complete_ner_wiki_lines)
+    #
+    #             temp_file = open(directory + "/en.tok.off.pos.aut", "w")
+    #             for lst in complete_ner_wiki_lines:
+    #                 for per in pers_list:
+    #                     if len(lst) > 5:
+    #                         if lst[3] in per:
+    #                             lst[6] = per[1]
+    #                 temp_file.write(" ".join(lst) + "\n")
+    #             temp_file.close()
+    #             print("Finished writing to:", directory)
 
                 # TODO:
                 #  ondersteuning voor missende tags toevoegen
