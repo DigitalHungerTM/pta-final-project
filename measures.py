@@ -3,6 +3,8 @@
 # modify it to our fit.
 # Date: 22-05-2022
 # Authors: Mathijs Afman, Maxim van der Maesen de Sombreff, Thijmen Adam
+# usage: python3 measures.py folder/
+# example: python3 measures.py dev/
 
 from collections import Counter
 from nltk.metrics import ConfusionMatrix
@@ -11,41 +13,25 @@ import os
 
 
 def open_files(path_name):
-    """Opens all the needed files with the needed input.
-    Input has to be /[folder_name]
     """
-    cur_path = os.getcwd()
-    group_path = cur_path + path_name
+    Opens all files in the folder with name folder_name
+    example of a folder_name: 'dev/'
+    and returns a list of all split lines of all files
+    """
 
-    # Loops through the list of directories in a main directory and
-    # gets all .ent or .aut files depending on the index
-    final_lst = []
-    for files in os.walk(group_path):
-        for file in files:
-            directory = files[0]
-            if 'en.tok.off.pos.ent' in file:
-                # Change the index [5] to where the index
-                # to where the .ent file is found in one of your directories.
-                with open(directory + '/' + file[5], encoding='utf-8') as f:
-                    sent_list = f.readlines()
-                    for sent in sent_list:
-                        lst = sent.split()
-                        final_lst.append(lst)
+    ent_list = []
+    aut_list = []
+    directory = sys.argv[1]
+    folders = os.listdir(directory)
+    for folder in folders:
+        with open(f'{directory}/{folder}/en.tok.off.pos.ent', encoding='utf-8') as inp:
+            for line in inp.readlines():
+                ent_list.append(line.split())
+        with open(f'{directory}/{folder}/en.tok.off.pos.aut', encoding='utf-8') as inp:
+            for line in inp.readlines():
+                aut_list.append(line.split())
 
-    final_lst2 = []
-    for files in os.walk(group_path):
-        for file in files:
-            directory = files[0]
-            if 'en.tok.off.pos.aut' in file:
-                # Change the index [4] to where the index
-                # to where the .aut file is found in one of your directories
-                with open(directory + '/' + file[4], encoding='utf-8') as f:
-                    sent_list = f.readlines()
-                    for sent in sent_list:
-                        lst = sent.split()
-                        final_lst2.append(lst)
-
-    return final_lst, final_lst2
+    return ent_list, aut_list
 
 
 def check_tagged(line):
@@ -117,7 +103,8 @@ def find_true_pos(cm, labels):
 def main():
 
     annot1, annot2 = open_files(sys.argv[1])
-
+    k=0
+    print(annot1[k], annot2[k])
     tagged1 = []
     tagged2 = []
 
@@ -248,8 +235,8 @@ def main():
             wikilist2.append(item)
 
     print()
-    print("How many times a link was predicted by us when " 
-          "there shouldn't have been one: ", 
+    print("How many times a link was predicted by us when "
+          "there shouldn't have been one: ",
           len(wikilist2) - len(wikilist))
     # TODO:
     #   Calculate not predicting a link when there should
