@@ -161,6 +161,20 @@ def write_file(filename, lines):
         out.write('\n'.join([' '.join(line) for line in lines]))
 
 
+def get_person_list(wiki_list):
+    """"""
+    final_list = []
+    for i in range(len(wiki_list)):
+        check_list = []
+        if len(wiki_list[i]) > 5:
+            check_list.append(wiki_list[i][5])
+            for word in check_list:
+                if word in wiki_list[i] and word == "PER":
+                    final_list.append([wiki_list[i][3], wiki_list[i][6]])
+
+    return final_list
+
+
 def main():
 
     path = os.getcwd()
@@ -190,6 +204,9 @@ def main():
                 spacy_ner_wiki_lines = append_spacy_ner_wiki(lines, tagged_spans)
 
                 complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
+
+                pers_list = get_person_list(complete_ner_wiki_lines)
+                print(pers_list)
 
                 temp_file = open(directory + "/en.tok.off.pos.aut", "w")
                 for lst in complete_ner_wiki_lines:
