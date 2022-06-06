@@ -170,7 +170,8 @@ def get_person_list(wiki_list):
             check_list.append(wiki_list[i][5])
             for word in check_list:
                 if word in wiki_list[i] and word == "PER":
-                    final_list.append([wiki_list[i][3], wiki_list[i][6]])
+                    if wiki_list[i][3] not in final_list:
+                        final_list.append([wiki_list[i][3], wiki_list[i][6]])
 
     return final_list
 
@@ -206,10 +207,13 @@ def main():
                 complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
 
                 pers_list = get_person_list(complete_ner_wiki_lines)
-                print(pers_list)
 
                 temp_file = open(directory + "/en.tok.off.pos.aut", "w")
                 for lst in complete_ner_wiki_lines:
+                    for per in pers_list:
+                        if len(lst) > 5:
+                            if lst[3] in per:
+                                lst[6] = per[1]
                     temp_file.write(" ".join(lst) + "\n")
                 temp_file.close()
                 print("Finished writing to:", directory)
