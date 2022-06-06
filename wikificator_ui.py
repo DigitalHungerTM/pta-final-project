@@ -1,4 +1,4 @@
-# filename: wikificator.py
+# filename: wikificator_ui.py
 # author: Mathijs Afman, Maxim van der Maesen de Sombreff, Thijmen Adam
 # description: ner tags and wikificates a file, input on the streamlit
 # Should be a .raw file and a .pos file from the same directory.
@@ -143,6 +143,19 @@ def wordnet_gen_ner_wiki(lines):
                         break
     return lines
 
+def get_person_list(wiki_list):
+    """"""
+    final_list = []
+    for i in range(len(wiki_list)):
+        check_list = []
+        if len(wiki_list[i]) > 5:
+            check_list.append(wiki_list[i][5])
+            for word in check_list:
+                if word in wiki_list[i] and word == "PER":
+                    if wiki_list[i][3] not in final_list:
+                        final_list.append([wiki_list[i][3], wiki_list[i][6]])
+    return final_list
+
 
 def main():
 
@@ -154,7 +167,7 @@ def main():
              "has to be a pos-tagged file adapted from the .raw file."
              " Once you have uploaded the files it will run the "
              " program and showcase the wikified"
-             " clickable links in a text. It will not be 100% accurate.")
+             " clickable links in a text. It will not be 100% accurate. You will also need an internet connection for this program to work.")
     lines = st.file_uploader("Please upload a .pos file here", type=["pos"])
     raw_text = st.file_uploader("Please upload a .raw file here", type=["raw"])
 
@@ -173,9 +186,16 @@ def main():
 
         complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
 
+        pers_list = get_person_list(complete_ner_wiki_lines)
+
         line_list = []
 
         for line in complete_ner_wiki_lines:
+            for per in pers_list:
+                if len(line) > 4:
+                    if line[3] in per:
+                        line[6] = per[1]
+                        print(line)
             line_list.append(line)
 
         print_string = ""
