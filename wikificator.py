@@ -35,6 +35,7 @@ def find_wiki_link(string):
     """
     try:
         return wk.page(wk.search(string)[0]).url
+        # return 'wiki page placeholder'
     except IndexError:  # wikipedia api returns an empty list
         return 'no_page_found'
     except wk.exceptions.DisambiguationError:
@@ -44,7 +45,8 @@ def find_wiki_link(string):
 
 
 def disambiguate_gpe(term):
-    """Tries to find the difference in GPE for city and country.
+    """
+    Tries to find the difference in GPE for city and country.
     Returns a tag.
     """
     try:
@@ -86,11 +88,12 @@ def spacy_gen_ner_wiki(ent):
         'GPE': 'GPE',
         'LOC': 'NAT',  # klopt misschien niet helemaal
         'ORG': 'ORG',
-        'NORP': 'ORG',  # neemt nationalities (zoals 'lebanese') ook mee
+        # 'NORP': 'ORG',  # neemt nationalities (zoals 'lebanese') ook mee
         'WORK_OF_ART': 'ENT',
     }
     # filters on only wanted NER tags
-    if ent.label_ in 'PERSON GPE LOC ORG NORP WORK_OF_ART'.split():
+    # add NORP here if you enable it in the lut
+    if ent.label_ in 'PERSON GPE LOC ORG WORK_OF_ART'.split():
         for token in ent_tokens:
             spans.append([token_start,
                           token_start + len(token),
@@ -170,7 +173,8 @@ def write_file(filename, lines):
 
 
 def get_person_list(wiki_list):
-    """Takes a wikificated list and seeks out the person tag, puts the
+    """
+    Takes a wikificated list and seeks out the person tag, puts the
     PER word in a list with the wiki link. returns a lists of lists.
     """
     final_list = []
@@ -229,44 +233,6 @@ def main():
                    complete_ner_wiki_lines)
 
         print(f'finished writing {folder}')
-
-    # for item in os.walk(group_path, topdown=True):
-    #     for title in item:
-    #         if "en.tok.off.pos" in title:
-    #
-    #             directory = item[0]
-    #             print("Working on:", directory)
-    #             # For this index, check the index in
-    #             # the files of one of your directories.
-    #             # Change [2][3] to the index of the .pos file.
-    #             # Change [2][1] to the index of the .raw file.
-    #             lines = open_split_file(directory + "/" + item[2][3])
-    #             raw_text = open_raw_file(directory + "/" + item[2][1])
-    #             ner_text = NER(raw_text)
-    #
-    #             tagged_spans = []
-    #             for ent in ner_text.ents:
-    #                 ner_wiki_spans = spacy_gen_ner_wiki(ent)
-    #                 for line in ner_wiki_spans:
-    #                     tagged_spans.append(line)
-    #
-    #             spacy_ner_wiki_lines = append_spacy_ner_wiki(lines,
-    #                                                          tagged_spans)
-    #
-    #             complete_ner_wiki_lines = wordnet_gen_ner_wiki(
-    #                                                  spacy_ner_wiki_lines)
-    #
-    #             pers_list = get_person_list(complete_ner_wiki_lines)
-    #
-    #             temp_file = open(directory + "/en.tok.off.pos.aut", "w")
-    #             for lst in complete_ner_wiki_lines:
-    #                 for per in pers_list:
-    #                     if len(lst) > 5:
-    #                         if lst[3] in per:
-    #                             lst[6] = per[1]
-    #                 temp_file.write(" ".join(lst) + "\n")
-    #             temp_file.close()
-    #             print("Finished writing to:", directory)
 
 
 if __name__ == "__main__":
