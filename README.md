@@ -19,10 +19,13 @@ Run the wikificator.py file to loop through folders.
 ```commandline
 python3 wikificator.py folder
 ```
+Make sure that the folder containing the folders with .pos files is a sibling of wikificatory.py  
 example:
 ```commandline
 python3 wikificator.py dev
 ```
+
+This puts the .ent files in a 'results' folder which is a sibling of wikificator.py, remove the results folder to run the program again.
 
 You can also use the wikificator_ui.py file.  
 ```commandline
