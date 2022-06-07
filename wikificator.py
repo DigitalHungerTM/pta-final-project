@@ -2,7 +2,7 @@
 # author: Mathijs Afman, Maxim van der Maesen de Sombreff, Thijmen Adam
 # description: ner tags and wikificates a file
 # usage: python3 wikificator.py [directory]
-# example: python3 wikificator.py /dev
+# example: python3 wikificator.py dev
 
 import os
 import spacy
@@ -82,9 +82,10 @@ def spacy_gen_ner_wiki(ent):
         'LOC': 'NAT',  # klopt misschien niet helemaal
         'ORG': 'ORG',
         'NORP': 'ORG',  # neemt nationalities (zoals 'lebanese') ook mee
+        'WORK_OF_ART': 'ENT',
     }
     # filters on only wanted NER tags
-    if ent.label_ in 'PERSON GPE LOC ORG NORP'.split():
+    if ent.label_ in 'PERSON GPE LOC ORG NORP WORK_OF_ART'.split():
         for token in ent_tokens:
             spans.append([token_start,
                           token_start + len(token),
@@ -134,10 +135,7 @@ def wordnet_gen_ner_wiki(lines):
     hypernym_dict = {
         'ANIMAL': wn.synset('animal.n.01'),
         'SPORT': wn.synset('sport.n.01'),
-        'ENTERTAINMENT': wn.synset('book.n.01'),
-        'ENTERTAINMENT1': wn.synset('movie.n.01'),
-        'ENTERTAINMENT2': wn.synset('newspaper.n.01'),
-        'ENTERTAINMENT3': wn.synset('magazine.n.01')
+        'SPORT': wn.synset('athletics.n.01'),
     }
     for line in lines:
         if len(line) > 4:
@@ -164,7 +162,9 @@ def write_file(filename, lines):
 
 
 def get_person_list(wiki_list):
-    """"""
+    """Takes a wikificated list and seeks out the person tag, puts the
+    PER word in a list with the wiki link. returns a lists of lists.
+    """
     final_list = []
     for i in range(len(wiki_list)):
         check_list = []
@@ -172,7 +172,10 @@ def get_person_list(wiki_list):
             check_list.append(wiki_list[i][5])
             for word in check_list:
                 if word in wiki_list[i] and word == "PER":
-                    if wiki_list[i][3] not in final_list:
+                    if ([wiki_list[i][3], wiki_list[i][6]] not in
+                       final_list and
+                       wiki_list[i][6] != 'ambiguous' and
+                       wiki_list[i][6] != 'no_link_found'):
                         final_list.append([wiki_list[i][3], wiki_list[i][6]])
 
     return final_list
@@ -183,6 +186,10 @@ def main():
     directory = sys.argv[1]
     folders = os.listdir(directory)
     print(folders)
+
+    new_directory = "results"
+    os.mkdir(new_directory)
+
     for folder in folders:
         print(f"working on {folder}")
         lines = open_split_file(f"{directory}/{folder}/en.tok.off.pos")
@@ -201,13 +208,17 @@ def main():
 
         pers_list = get_person_list(complete_ner_wiki_lines)
 
+        direct = folder
+        path = os.path.join(new_directory, direct)
+        os.mkdir(path)
         for lst in complete_ner_wiki_lines:
             for per in pers_list:
                 if len(lst) > 5:
                     if lst[3] in per:
                         lst[6] = per[1]
 
-        write_file(f"{directory}/{folder}/en.tok.off.pos.aut", complete_ner_wiki_lines)
+        write_file(f"results/{folder}/en.tok.off.pos.ent",
+                   complete_ner_wiki_lines)
 
         print(f'finished writing {folder}')
 
@@ -231,9 +242,11 @@ def main():
     #                 for line in ner_wiki_spans:
     #                     tagged_spans.append(line)
     #
-    #             spacy_ner_wiki_lines = append_spacy_ner_wiki(lines, tagged_spans)
+    #             spacy_ner_wiki_lines = append_spacy_ner_wiki(lines,
+    #                                                          tagged_spans)
     #
-    #             complete_ner_wiki_lines = wordnet_gen_ner_wiki(spacy_ner_wiki_lines)
+    #             complete_ner_wiki_lines = wordnet_gen_ner_wiki(
+    #                                                  spacy_ner_wiki_lines)
     #
     #             pers_list = get_person_list(complete_ner_wiki_lines)
     #
@@ -246,16 +259,6 @@ def main():
     #                 temp_file.write(" ".join(lst) + "\n")
     #             temp_file.close()
     #             print("Finished writing to:", directory)
-
-                # TODO:
-                #  ondersteuning voor missende tags toevoegen
-                #    alleen nog entertainment
-                # TODO:
-                #  onderscheiden van country en city in de GPE tag
-                #    misschien door definition van de wiki page te checken
-                # TODO:
-                #  voor delen van namen misschien de wiki pagina kopieren
-                #  genoemde namen
 
 
 if __name__ == "__main__":

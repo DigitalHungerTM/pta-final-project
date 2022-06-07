@@ -69,9 +69,10 @@ def spacy_gen_ner_wiki(ent):
         'LOC': 'NAT',  # klopt misschien niet helemaal
         'ORG': 'ORG',
         'NORP': 'ORG',  # neemt nationalities (zoals 'lebanese') ook mee
+        'WORK_OF_ART': 'ENT',
     }
     # filters on only wanted NER tags
-    if ent.label_ in 'PERSON GPE LOC ORG NORP'.split():
+    if ent.label_ in 'PERSON GPE LOC ORG NORP WORK_OF_ART'.split():
         for token in ent_tokens:
             spans.append([token_start,
                           token_start + len(token),
@@ -121,10 +122,7 @@ def wordnet_gen_ner_wiki(lines):
     hypernym_dict = {
         'ANIMAL': wn.synset('animal.n.01'),
         'SPORT': wn.synset('sport.n.01'),
-        'ENTERTAINMENT': wn.synset('book.n.01'),
-        'ENTERTAINMENT1': wn.synset('movie.n.01'),
-        'ENTERTAINMENT2': wn.synset('newspaper.n.01'),
-        'ENTERTAINMENT3': wn.synset('magazine.n.01')
+        'SPORT': wn.synset('athletics.n.01'),
     }
     for line in lines:
         if len(line) > 4:
@@ -144,7 +142,9 @@ def wordnet_gen_ner_wiki(lines):
     return lines
 
 def get_person_list(wiki_list):
-    """"""
+    """Takes a wikificated list and seeks out the person tag, puts the
+    PER word in a list with the wiki link. returns a lists of lists.
+    """
     final_list = []
     for i in range(len(wiki_list)):
         check_list = []
@@ -152,8 +152,12 @@ def get_person_list(wiki_list):
             check_list.append(wiki_list[i][5])
             for word in check_list:
                 if word in wiki_list[i] and word == "PER":
-                    if wiki_list[i][3] not in final_list:
+                    if ([wiki_list[i][3], wiki_list[i][6]] not in
+                       final_list and
+                       wiki_list[i][6] != 'ambiguous' and
+                       wiki_list[i][6] != 'no_link_found'):
                         final_list.append([wiki_list[i][3], wiki_list[i][6]])
+
     return final_list
 
 
@@ -167,7 +171,8 @@ def main():
              "has to be a pos-tagged file adapted from the .raw file."
              " Once you have uploaded the files it will run the "
              " program and showcase the wikified"
-             " clickable links in a text. It will not be 100% accurate. You will also need an internet connection for this program to work.")
+             " clickable links in a text. It will not be 100% accurate. "
+             "You will also need an internet connection for this program to work.")
     lines = st.file_uploader("Please upload a .pos file here", type=["pos"])
     raw_text = st.file_uploader("Please upload a .raw file here", type=["raw"])
 
@@ -195,7 +200,7 @@ def main():
                 if len(line) > 4:
                     if line[3] in per:
                         line[6] = per[1]
-                        print(line)
+
             line_list.append(line)
 
         print_string = ""
@@ -205,21 +210,12 @@ def main():
                 if len(item) > 5:
                     if "https" in item[6]:
                         print_string += " [" + item[3] + "](" + item[6] + ")"
-                else:
+                    else:
+                        print_string += " " + item[3]
+                else: 
                     print_string += " " + item[3]
 
         st.write(print_string)
-
-        # TODO:
-        #  ondersteuning voor missende tags toevoegen
-        #    alleen nog entertainment
-        # TODO:
-        #  onderscheiden van country en city in de GPE tag
-        #    misschien door definition van de wiki page te checken
-        # TODO:
-        #  voor delen van namen misschien de wiki pagina kopieren
-        #  genoemde namen
-
 
 if __name__ == "__main__":
     main()
