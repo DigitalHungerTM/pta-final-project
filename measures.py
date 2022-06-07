@@ -22,12 +22,18 @@ def open_files(path_name):
     ent_list = []
     aut_list = []
     directory = sys.argv[1]
+    directory2 = sys.argv[2]
     folders = os.listdir(directory)
+    folders2 = os.listdir(directory2)
     for folder in folders:
-        with open(f'{directory}/{folder}/en.tok.off.pos.ent', encoding='utf-8') as inp:
+        with open(f'{directory}/{folder}/en.tok.off.pos.ent',
+                  encoding='utf-8') as inp:
             for line in inp.readlines():
                 ent_list.append(line.split())
-        with open(f'{directory}/{folder}/en.tok.off.pos.aut', encoding='utf-8') as inp:
+
+    for folder2 in folders2:
+        with open(f'{directory2}/{folder2}/en.tok.off.pos.ent',
+                  encoding='utf-8') as inp:
             for line in inp.readlines():
                 aut_list.append(line.split())
 
@@ -103,8 +109,6 @@ def find_true_pos(cm, labels):
 def main():
 
     annot1, annot2 = open_files(sys.argv[1])
-    k=0
-    print(annot1[k], annot2[k])
     tagged1 = []
     tagged2 = []
 
@@ -227,7 +231,6 @@ def main():
     for item in annot1:
         if len(item) > 6 and item[6] != "":
             wikilist.append(item)
-
 
     wikilist2 = []
     for item2 in annot2:

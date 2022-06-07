@@ -141,6 +141,7 @@ def wordnet_gen_ner_wiki(lines):
                         break
     return lines
 
+
 def get_person_list(wiki_list):
     """Takes a wikificated list and seeks out the person tag, puts the
     PER word in a list with the wiki link. returns a lists of lists.
@@ -171,8 +172,9 @@ def main():
              "has to be a pos-tagged file adapted from the .raw file."
              " Once you have uploaded the files it will run the "
              " program and showcase the wikified"
-             " clickable links in a text. It will not be 100% accurate. "
-             "You will also need an internet connection for this program to work.")
+             " clickable links in a text. "
+             "It will not be 100% accurate. You will also need "
+             "an internet connection for this program to work.")
     lines = st.file_uploader("Please upload a .pos file here", type=["pos"])
     raw_text = st.file_uploader("Please upload a .raw file here", type=["raw"])
 
@@ -212,10 +214,11 @@ def main():
                         print_string += " [" + item[3] + "](" + item[6] + ")"
                     else:
                         print_string += " " + item[3]
-                else: 
+                else:
                     print_string += " " + item[3]
 
         st.write(print_string)
+
 
 if __name__ == "__main__":
     main()
