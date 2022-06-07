@@ -15,13 +15,13 @@ and edit wikipedia.py. Edit line 389 for the BeautifulSoup constructor
 to have ```"features='lxml'"``` as an argument so that the line reads:
 ```lis = BeautifulSoup(html, features='lxml').find_all('li')```
 ## Usage:
-Run the wikificator.py file to loop through folders. Once an error pops, a mistake has been found in one of the folders. It says which folder you were working on. Delete that folder and rerun the wikificator.py until it works fine.
+Run the wikificator.py file to loop through folders.
 ```commandline
-python3 wikificator.py folder/
+python3 wikificator.py folder
 ```
 example:
 ```commandline
-python3 wikificator.py dev/
+python3 wikificator.py dev
 ```
 
 You can also use the wikificator_ui.py file.  
