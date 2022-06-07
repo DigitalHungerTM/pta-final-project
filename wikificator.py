@@ -197,7 +197,6 @@ def main():
 
     directory = sys.argv[1]
     folders = os.listdir(directory)
-    print(folders)
 
     new_directory = "results"
     os.mkdir(new_directory)
