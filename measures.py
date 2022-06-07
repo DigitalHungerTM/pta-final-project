@@ -3,8 +3,8 @@
 # modify it to our fit.
 # Date: 22-05-2022
 # Authors: Mathijs Afman, Maxim van der Maesen de Sombreff, Thijmen Adam
-# usage: python3 measures.py folder/
-# example: python3 measures.py dev/
+# usage: python3 measures.py folder/ folder2/
+# example: python3 measures.py dev/ results/
 
 from collections import Counter
 from nltk.metrics import ConfusionMatrix
