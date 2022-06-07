@@ -29,9 +29,10 @@ def open_raw_file(filename):
 
 def find_wiki_link(string):
     """tries to find a wikipedia link for a string,
-     returns the link if found,
-     returns 'ambiguous' if the string was ambiguous
-     returns 'no_page_found' if no page was found"""
+    returns the link if found,
+    returns 'ambiguous' if the string was ambiguous
+    returns 'no_page_found' if no page was found
+    """
     try:
         return wk.page(wk.search(string)[0]).url
     except IndexError:  # wikipedia api returns an empty list
@@ -43,6 +44,9 @@ def find_wiki_link(string):
 
 
 def disambiguate_gpe(term):
+    """Tries to find the difference in GPE for city and country.
+    Returns a tag.
+    """
     try:
         summary = wk.page(wk.search(term)[0]).summary
         # the definition is usually mentioned first
@@ -71,7 +75,8 @@ def disambiguate_gpe(term):
 
 def spacy_gen_ner_wiki(ent):
     """formats an entity in the same way as en.tok.off.pos
-    and appends an ner tag and a wiki link using spacy"""
+    and appends an ner tag and a wiki link using spacy
+    """
     ent_start = ent.start_char
     token_start = ent_start
     ent_tokens = ent.text.split()
@@ -102,7 +107,8 @@ def spacy_gen_ner_wiki(ent):
 
 def append_spacy_ner_wiki(lines, tagged_spans):
     """appends the ner tag and wiki link
-    to the lines with the correct character spans"""
+    to the lines with the correct character spans
+    """
     for line in lines:
         for span in tagged_spans:
             if int(line[0]) == int(span[0]):
@@ -114,7 +120,8 @@ def append_spacy_ner_wiki(lines, tagged_spans):
 def hypernym_of(synset1, synset2):
     """ Returns True if synset2 is a hypernym of
     synset1, or if they are the same synset.
-    Returns False otherwise. """
+    Returns False otherwise.
+    """
     if synset1 == synset2:
         return True
     for hypernym in synset1.hypernyms():
@@ -130,7 +137,8 @@ def wordnet_gen_ner_wiki(lines):
     ner tags and wikis for lines that haven't already
     been tagged using wordnet
 
-    this tagger only works for nouns (for now?)"""
+    this tagger only works for nouns
+    """
     lemmatizer = WordNetLemmatizer()
     hypernym_dict = {
         'ANIMAL': wn.synset('animal.n.01'),
@@ -175,7 +183,7 @@ def get_person_list(wiki_list):
                     if ([wiki_list[i][3], wiki_list[i][6]] not in
                        final_list and
                        wiki_list[i][6] != 'ambiguous' and
-                       wiki_list[i][6] != 'no_link_found'):
+                       wiki_list[i][6] != 'no_page_found'):
                         final_list.append([wiki_list[i][3], wiki_list[i][6]])
 
     return final_list
